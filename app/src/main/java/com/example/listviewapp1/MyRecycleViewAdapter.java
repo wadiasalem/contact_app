@@ -8,6 +8,8 @@ import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,10 +20,10 @@ import java.util.ArrayList;
 
 public class MyRecycleViewAdapter extends RecyclerView.Adapter<MyRecycleViewAdapter.MyViewAdapter> {
 
-    Context context;
+    MainActivity context;
     ArrayList<Contact> data;
 
-    public MyRecycleViewAdapter(Context context, ArrayList<Contact> data) {
+    public MyRecycleViewAdapter(MainActivity context, ArrayList<Contact> data) {
         this.context = context;
         this.data = data;
     }
@@ -61,34 +63,63 @@ public class MyRecycleViewAdapter extends RecyclerView.Adapter<MyRecycleViewAdap
             iv_call = v.findViewById(R.id.btn_call_contact);
             iv_edit = v.findViewById(R.id.btn_edit_contact);
             iv_delete = v.findViewById(R.id.btn_delete_contact);
+
+            MyDBHelper DB = new MyDBHelper(context);
+
             iv_edit.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int index = getAdapterPosition(); // return position
+                    Contact contact = data.get(index);
+
                     AlertDialog.Builder alert = new AlertDialog.Builder(context);
-                    alert.setTitle("edition");
-                    alert.setMessage("Modifier des infos");
                     LayoutInflater inf = LayoutInflater.from(context);
-                    View view2 = inf.inflate(R.layout.product_item,null);
-                    alert.setView(view2);
+                    View dialogView = inf.inflate(R.layout.edit_contact_dialog,null);
+                    alert.setView(dialogView);
+
+                    TextView tvDialName,tvDialLastName,tvDialNumber ;
+                    tvDialName= dialogView.findViewById(R.id.tv_edit_firstname_contact_dialog);
+                    tvDialLastName= dialogView.findViewById(R.id.tv_edit_lastname_contact_dialog);
+                    tvDialNumber= dialogView.findViewById(R.id.tv_edit_tel_contact_dialog);
+                    tvDialName.setText(contact.getName());
+                    tvDialLastName.setText(contact.getLastName());
+                    tvDialNumber.setText(contact.getTel());
+
+                    alert.setPositiveButton("Modifier", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Contact newContact = new Contact(
+                                    tvDialName.getText().toString(),
+                                    tvDialLastName.getText().toString(),
+                                    tvDialNumber.getText().toString());
+                            DB.updateContact(contact.getTel(),newContact);
+                            context.getData();
+
+                        }
+                    });
+
+                    alert.create();
                     alert.show();
                 }
             });
+
             iv_call.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     int index = getAdapterPosition();
-                    Intent callIntent = new Intent(Intent.ACTION_CALL);
+                    Intent callIntent = new Intent(Intent.ACTION_DIAL);
                     callIntent.setData(Uri.parse("tel:"+data.get(index).getTel()));
                     context.startActivity(callIntent);
                 }
             });
+
             iv_delete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int index = getAdapterPosition();
-                    data.remove(index);
-                    notifyDataSetChanged();
+                    int index = getAdapterPosition(); // return position
+                    Contact contact = data.get(index);
+                    DB.deleteContact(contact.getTel());
+                    context.getData();
                 }
             });
         }

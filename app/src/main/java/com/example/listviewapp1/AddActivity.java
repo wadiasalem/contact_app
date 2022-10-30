@@ -37,9 +37,10 @@ public class AddActivity extends AppCompatActivity {
                 String lastName = inputLastName.getText().toString();
                 String tel = inputTel.getText().toString();
 
-                HomeActivity.contactList.add(new Contact(name,lastName,tel));
-                reset();
-
+                MyDBHelper db = new MyDBHelper(AddActivity.this);
+                long result = db.addContact(new Contact(name,lastName,tel));
+                if(result != -1)
+                    reset();
             }
         });
 

@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.stream.*;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -24,27 +26,21 @@ public class MainActivity extends AppCompatActivity {
 
 
     private EditText inuputSearch;
-    private ArrayList<Contact> filtredContacts = new ArrayList<>();
-    RecyclerView rv;
+    private MyDBHelper DB;
+    private ArrayList<Contact> data ;
+    private ArrayList<Contact> filtredContacts ;
+    private RecyclerView rv;
+    private String searchValue = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        filtredContacts = HomeActivity.contactList;
-
         inuputSearch = findViewById(R.id.inputSearchShow);
         rv = findViewById(R.id.rv);
-        /*rv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Contact calledContact = HomeActivity.contactList.get(i);
-                Intent intentCall = new Intent(Intent.ACTION_DIAL);
-                intentCall.setData(Uri.parse("tel:"+calledContact.getTel()));
-                startActivity(intentCall);;
-                return false;
-            }
-        });*/
+
+        DB = new MyDBHelper(MainActivity.this);
+        getData();
+
 
         inuputSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -59,45 +55,58 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                String searchValue = editable.toString().toUpperCase();
-
-                if(searchValue.length() == 0) {
-                    filtredContacts = HomeActivity.contactList;
-                    ProductAdapter pAdapter = new ProductAdapter(MainActivity.this, filtredContacts);
-                    MyRecycleViewAdapter rvAdapter = new MyRecycleViewAdapter(
-                            MainActivity.this,
-                            filtredContacts);
-                    rv.setAdapter(rvAdapter);
-                }else{
-                    filtredContacts = new ArrayList<Contact>();
-                    HomeActivity.contactList.forEach((contact)->{
-                        if(contact.name.toUpperCase().contains(searchValue)){
-                            filtredContacts.add(contact);
-                        }else if(contact.lastName.toUpperCase().contains(searchValue)){
-                            filtredContacts.add(contact);
-                        }else if(contact.tel.toUpperCase().contains(searchValue)){
-                            filtredContacts.add(contact);
-                        }
-                    });
-                    MyRecycleViewAdapter rvAdapter = new MyRecycleViewAdapter(
-                            MainActivity.this,
-                            filtredContacts);
-                    ProductAdapter pAdapter = new ProductAdapter(
-                            MainActivity.this,
-                            filtredContacts);
-                    rv.setAdapter(rvAdapter);
-                }
+                searchValue = editable.toString().toUpperCase();
+                filter();
             }
         });
 
-        ArrayAdapter adapter = new ArrayAdapter(
-                MainActivity.this,
-                android.R.layout.simple_list_item_1,
-                filtredContacts);
         MyRecycleViewAdapter rvAdapter = new MyRecycleViewAdapter(
                 MainActivity.this,
                 filtredContacts);
-        ProductAdapter pAdapter = new ProductAdapter(this, filtredContacts);
         rv.setAdapter(rvAdapter);
+    }
+
+    private void filter(){
+        if(searchValue.length() == 0) {
+            filtredContacts = data;
+            MyRecycleViewAdapter rvAdapter = new MyRecycleViewAdapter(
+                    MainActivity.this,
+                    filtredContacts);
+            rv.setAdapter(rvAdapter);
+        }else{
+            filtredContacts = new ArrayList<Contact>();
+            data.forEach((contact)->{
+                if(contact.name.toUpperCase().contains(searchValue)){
+                    filtredContacts.add(contact);
+                }else if(contact.lastName.toUpperCase().contains(searchValue)){
+                    filtredContacts.add(contact);
+                }else if(contact.tel.toUpperCase().contains(searchValue)){
+                    filtredContacts.add(contact);
+                }
+            });
+
+            MyRecycleViewAdapter rvAdapter = new MyRecycleViewAdapter(
+                    MainActivity.this,
+                    filtredContacts);
+            rv.setAdapter(rvAdapter);
+        }
+    }
+
+    public void getData(){
+        data = new ArrayList<>();
+        Cursor cursor = DB.getContacts();
+        if(cursor.getCount() == 0){
+            Toast.makeText(this, "Votre contact est vide", Toast.LENGTH_SHORT).show();
+        }else{
+            while (cursor.moveToNext()){
+                Contact contact = new Contact(
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(0)
+                );
+                data.add(contact);
+            }
+        }
+        filter();
     }
 }
