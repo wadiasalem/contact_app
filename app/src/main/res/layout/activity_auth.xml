@@ -1,22 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/tvAuth"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Authentification"
+        android:layout_marginBottom="20dp"
+        android:text="Connexion"
         android:textAlignment="center"
-        android:textSize="34sp" />
+        android:textSize="34sp"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginBottom="30dp"
+        app:srcCompat="@drawable/signin" />
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="veuillez entrer les détails ci-dessous pour vous connecter"
+        android:textAlignment="center"
+        android:textSize="16sp" />
 
     <EditText
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/border"
         android:ems="10"
         android:hint="Saisir Votre nom"
         android:inputType="textPersonName" />
@@ -25,6 +49,8 @@
         android:id="@+id/password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/border"
         android:ems="10"
         android:hint="Saisir votre mot de passe"
         android:inputType="numberPassword" />
@@ -32,6 +58,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:gravity="center_horizontal">
 
         <Button

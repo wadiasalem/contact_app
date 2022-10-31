@@ -20,10 +20,10 @@ import java.util.ArrayList;
 
 public class MyRecycleViewAdapter extends RecyclerView.Adapter<MyRecycleViewAdapter.MyViewAdapter> {
 
-    MainActivity context;
+    HomeActivity context;
     ArrayList<Contact> data;
 
-    public MyRecycleViewAdapter(MainActivity context, ArrayList<Contact> data) {
+    public MyRecycleViewAdapter(HomeActivity context, ArrayList<Contact> data) {
         this.context = context;
         this.data = data;
     }
