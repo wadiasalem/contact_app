@@ -1,5 +1,6 @@
 package com.example.listviewapp1;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -9,6 +10,8 @@ import java.util.stream.*;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -35,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ActionBar actionBar;
+        actionBar = getSupportActionBar();
+        ColorDrawable color = new ColorDrawable(Color.parseColor("#FFFFFF"));
+        actionBar.setBackgroundDrawable(color);
+        actionBar.setElevation(0);
         inuputSearch = findViewById(R.id.inputSearchShow);
         rv = findViewById(R.id.rv);
 
